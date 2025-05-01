@@ -21,8 +21,8 @@ public class GoalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Goal>> getAllGoals(@RequestAttribute("userId") String userId) {
-        List<Goal> goals = goalService.findAllByUserId(userId);
+    public ResponseEntity<List<Goal>> getAllGoals() {
+        List<Goal> goals = goalService.findAll();
         return ResponseEntity.ok(goals);
     }
 
@@ -34,7 +34,8 @@ public class GoalController {
     }
 
     @PostMapping
-    public ResponseEntity<Goal> createGoal(@RequestAttribute("userId") String userId, @RequestBody Goal goal) {
+    public ResponseEntity<Goal> createGoal(@RequestBody Goal goal, @RequestAttribute("userId") String userId) {
+        // Set the authenticated user's ID on the goal
         goal.setUserId(userId);
         Goal savedGoal = goalService.save(goal);
         return new ResponseEntity<>(savedGoal, HttpStatus.CREATED);

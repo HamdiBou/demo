@@ -21,8 +21,8 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public List<Goal> findAllByUserId(String userId) {
-        return goalRepository.findAllByUserId(userId);
+    public List<Goal> findAll() {
+        return goalRepository.findAll();
     }
 
     @Override

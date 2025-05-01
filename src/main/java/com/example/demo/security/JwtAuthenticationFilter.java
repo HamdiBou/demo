@@ -14,8 +14,7 @@ import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-     private final JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider tokenProvider;
     private List<String> excludePatterns = Arrays.asList("/api/users/register", "/api/users/login");
 
     @Autowired
@@ -24,13 +23,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(@SuppressWarnings("null") HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // Skip CORS preflight requests
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
         String path = request.getServletPath();
-        return excludePatterns.stream().anyMatch(pattern -> path.equals(pattern));
+        return excludePatterns.stream().anyMatch(pattern -> path.startsWith(pattern));
     }
 
     @Override
-    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain) 
+    protected void doFilterInternal(HttpServletRequest request, 
+                                  HttpServletResponse response, 
+                                  FilterChain filterChain) 
             throws ServletException, IOException {
         
         try {
@@ -39,9 +44,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String userId = tokenProvider.getUserIdFromToken(jwt);
                 request.setAttribute("userId", userId);
+            } else if (!shouldNotFilter(request)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         
         filterChain.doFilter(request, response);

@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.example.demo.model.Goal;
 
 public interface GoalService {
-    List<Goal> findAllByUserId(String userId);
+    List<Goal> findAll();
     Optional<Goal> findById(String id);
     Goal save(Goal goal);
     Goal update(String id, Goal goal);

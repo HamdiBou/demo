@@ -3,6 +3,10 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.demo.service.UserService;
 import com.example.demo.model.User;
@@ -11,7 +15,6 @@ import com.example.demo.dto.LoginDTO;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;
@@ -28,10 +31,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
-        String token = userService.authenticate(loginDTO);
-        return ResponseEntity.ok(token);
-    }
+public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {
+    String token = userService.authenticate(loginDTO);
+
+    Map<String, String> response = new HashMap<>();
+    response.put("token", token);
+
+    return ResponseEntity.ok(response);
+}
+
 
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser(@RequestAttribute("userId") String userId) {
