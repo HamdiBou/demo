@@ -10,7 +10,6 @@ import java.util.List;
 public class Goal {
     @Id
     private String id;
-    
     private String title;
     private String description;
     private LocalDate targetDate;

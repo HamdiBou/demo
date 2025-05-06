@@ -84,4 +84,8 @@ public class UserServiceImpl implements UserService {
         dto.setLastName(user.getLastName());
         return dto;
     }
+    @Override
+    public String getUserIdFromToken(String token) {
+        return jwtTokenProvider.getUserIdFromToken(token);
+    }
 }

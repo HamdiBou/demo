@@ -7,6 +7,7 @@ import com.example.demo.model.User;
 public interface UserService {
     UserDTO register(User user);
     String authenticate(LoginDTO loginDTO);
+    String getUserIdFromToken(String token);
     UserDTO getCurrentUser(String userId);
     UserDTO updateUser(String userId, User user);
 }

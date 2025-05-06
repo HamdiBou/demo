@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.dto.LoginDTO;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -42,15 +44,18 @@ public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO)
 
 
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getCurrentUser(@RequestAttribute("userId") String userId) {
+    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
+        // Get userId from Spring Security Authentication object
+        String userId = authentication.getName();
         UserDTO user = userService.getCurrentUser(userId);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserDTO> updateUser(@RequestAttribute("userId") String userId, @RequestBody User user) {
+    public ResponseEntity<UserDTO> updateUser(Authentication authentication, @RequestBody User user) {
+        // Get userId from Spring Security Authentication object
+        String userId = authentication.getName();
         UserDTO updatedUser = userService.updateUser(userId, user);
         return ResponseEntity.ok(updatedUser);
     }
 }
-

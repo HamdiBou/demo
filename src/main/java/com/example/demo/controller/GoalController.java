@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.demo.service.GoalService;
 import com.example.demo.model.Goal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/goals")
-@CrossOrigin(origins = "*")
+@CrossOrigin()
 public class GoalController {
 
     private final GoalService goalService;
@@ -32,13 +33,16 @@ public class GoalController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    
     @PostMapping
-    public ResponseEntity<Goal> createGoal(@RequestBody Goal goal, @RequestAttribute("userId") String userId) {
-        // Set the authenticated user's ID on the goal
-        goal.setUserId(userId);
-        Goal savedGoal = goalService.save(goal);
-        return new ResponseEntity<>(savedGoal, HttpStatus.CREATED);
+    public ResponseEntity<?> createGoal(@RequestBody Goal goal, @RequestAttribute("userId") String userId) {
+        try {
+            goal.setUserId(userId);
+            Goal savedGoal = goalService.save(goal);
+            return new ResponseEntity<>(savedGoal, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{id}")
